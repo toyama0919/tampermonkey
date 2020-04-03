@@ -5,6 +5,7 @@
 // @description  try to take over the world!
 // @author       You
 // @match        https://www.youtube.com/results?search_query=*
+// @match        https://youtube.com/results?search_query=*
 // @grant        none
 // ==/UserScript==
 function filterHaveInnerHTML(argElements) {
