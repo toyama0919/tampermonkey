@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  try to take over the world!
 // @author       You
-// @match        http://b.hatena.ne.jp/search/text?safe=on&sort=recent&q=*
+// @match        https://b.hatena.ne.jp/search/text?safe=on&sort=recent&q=*
 // @grant        none
 // ==/UserScript==
 function filterHaveInnerHTML(argElements) {
