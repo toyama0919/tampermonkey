@@ -5,8 +5,8 @@
 // @description  try to take over the world!
 // @author       You
 // @match        https://b.hatena.ne.jp/
-// @match        https://b.hatena.ne.jp/hotentry/it
-// @match        https://b.hatena.ne.jp/entrylist/it
+// @match        https://b.hatena.ne.jp/hotentry/*
+// @match        https://b.hatena.ne.jp/entrylist/*
 // @grant        none
 // ==/UserScript==
 function filterHaveInnerHTML(argElements) {
