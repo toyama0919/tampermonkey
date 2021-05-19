@@ -30,6 +30,7 @@ var now = -99;
 
 var next_element = document.getElementById("pnnext");
 var prev_element = document.getElementById("pnprev");
+document.documentElement.setAttribute('class', "zAoYTe")
 
 document.addEventListener("keydown", function(event) {
   var id_str = document.activeElement.id;
