@@ -8,6 +8,16 @@
 // @match        https://youtube.com/results?search_query=*
 // @grant        none
 // ==/UserScript==
+
+function GM_addStyle (cssStr) {
+  var D = document;
+  var newNode = D.createElement ('style');
+  newNode.textContent = cssStr;
+
+  var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
+  targ.appendChild (newNode);
+}
+
 function filterHaveInnerHTML(argElements) {
   var i;
   var elms = [];
@@ -27,6 +37,13 @@ function paintSingle(number, argElements) {
 
 var elements = filterHaveInnerHTML(document.querySelectorAll("h3>a"));
 var now = -99;
+
+GM_addStyle ( `
+    #video-title:focus {
+      background: yellow !important;
+      color: red !important;
+    }
+` );
 
 document.addEventListener("keydown", function(event) {
   elements = filterHaveInnerHTML(document.querySelectorAll("h3>a"));
