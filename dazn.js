@@ -9,12 +9,10 @@
 // ==/UserScript==
 
 document.addEventListener("keydown", function(event) {
-  if(event.keyCode == 70) {
+  if(event.code == "KeyF") {
     var elm = document.getElementsByClassName("fullscreen___fullscreen___1OXBx")[0];
     elm.click();
-  }
-
-  if(event.keyCode == 72) {
+  } else if(event.code == "KeyH") {
     var elm_switch = document.getElementsByClassName("video-switcher__label___1kJP3")[0];
     elm_switch.click();
   }

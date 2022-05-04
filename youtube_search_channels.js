@@ -34,18 +34,18 @@ var now = -99;
 document.addEventListener("keydown", function(event) {
   elements = filterHaveInnerHTML(document.querySelectorAll("h3>a"));
   if(now == -99) {
-    if(event.keyCode == 38 || event.keyCode == 40) {
+    if(event.code == "ArrowUp" || event.code == "ArrowDown") {
       now = 0;
       paintSingle(now, elements);
     }
   } else {
-    if (event.keyCode == 38) {
+    if (event.code == "ArrowUp") {
       if (now > 0) {
         now = now - 1;
         paintSingle(now, elements);
       }
     }
-    if (event.keyCode == 40) {
+    if (event.code == "ArrowDown") {
       if (now < elements.length - 1) {
         now = now + 1;
         paintSingle(now, elements);

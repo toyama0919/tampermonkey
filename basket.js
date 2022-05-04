@@ -9,26 +9,20 @@
 // ==/UserScript==
 
 document.addEventListener("keydown", function(event) {
-  // 15秒進む
-  if(event.keyCode == 68) {
+  if(event.code == "KeyD") {
+    // 15秒進む
     var elm_advance = document.getElementsByClassName("sc-dnqmqq dxcVLA sc-htoDjs jGpmvi")[0];
     elm_advance.click();
-  }
-
-  // 15秒戻る
-  if(event.keyCode == 65) {
+  } else if(event.code == "KeyA") {
+    // 15秒戻る
     var elm_rewind = document.getElementsByClassName("sc-dnqmqq dxcVLA sc-htoDjs kftMvp")[0];
     elm_rewind.click();
-  }
-
-  // フルスクリーン
-  if(event.keyCode == 70) {
+  } else if(event.code == "KeyF") {
+    // フルスクリーン
     var elm = document.getElementsByClassName("sc-jzJRlG cfGAmp")[0];
     elm.click();
-  }
-
-  // 一時停止-再生
-  if(event.keyCode == 32) {
+  } else if(event.code == "Space") {
+    // 一時停止-再生
     var elm_switch = document.getElementsByClassName("sc-htoDjs eBngms")[0];
     elm_switch.click();
   }
