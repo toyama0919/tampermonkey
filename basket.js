@@ -5,6 +5,7 @@
 // @description  try to take over the world!
 // @author       You
 // @match        https://basketball.mb.softbank.jp/lives/*
+// @match        https://basketball.mb.softbank.jp/videos/*
 // @grant        none
 // ==/UserScript==
 
