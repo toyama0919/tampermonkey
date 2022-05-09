@@ -8,6 +8,7 @@
 // @match        https://www.youtube.com/c/*/videos
 // @match        https://youtube.com/channel/*/videos
 // @match        https://youtube.com/c/*/videos
+// @match        https://www.youtube.com/
 // @grant        none
 // ==/UserScript==
 
