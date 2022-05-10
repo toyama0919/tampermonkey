@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         youtube
+// @name         youtube_search
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  try to take over the world!
@@ -47,7 +47,6 @@ GM_addStyle ( `
 
 document.addEventListener("keydown", function(event) {
   elements = filterHaveInnerHTML(document.querySelectorAll("h3>a"));
-  var id_str = document.activeElement.id;
   if(now == -99) {
     if(event.code == "ArrowUp" || event.code == "ArrowDown") {
       now = 0;
