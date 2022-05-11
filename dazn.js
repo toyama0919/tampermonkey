@@ -29,6 +29,7 @@ function focus_a(number, argElements) {
 var now = -99;
 
 document.addEventListener("keydown", function(event) {
+  // カーソル移動
   if(event.code == "ArrowUp" || event.code == "ArrowDown") {
     var elements = get_elements(document.querySelectorAll("article.rail-tile__tile___Wf2pP>a"));
     if(now == -99) {
@@ -52,6 +53,7 @@ document.addEventListener("keydown", function(event) {
     }
   }
 
+  // 各種操作
   if(event.code == "KeyF") {
     var elm = document.getElementsByClassName("fullscreen___fullscreen___1OXBx")[0];
     elm.click();
