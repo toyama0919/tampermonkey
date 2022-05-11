@@ -9,11 +9,53 @@
 // @grant        none
 // ==/UserScript==
 
+function get_elements(argElements) {
+  var i;
+  var elms = [];
+  for(i=0;i < argElements.length;i++){
+      var element = argElements[i];
+      if(element.innerHTML !== "") {
+          elms.push(element);
+      }
+  }
+  return elms;
+}
+
+function focus_a(number, argElements) {
+  var nowElement = argElements[number];
+  nowElement.focus();
+}
+
+var now = -99;
+
 document.addEventListener("keydown", function(event) {
+  if(event.code == "ArrowUp" || event.code == "ArrowDown") {
+    var elements = get_elements(document.querySelectorAll("article.rail-tile__tile___Wf2pP>a"));
+    if(now == -99) {
+      if(event.code == "ArrowUp" || event.code == "ArrowDown") {
+        now = 0;
+        focus_a(now, elements);
+      }
+    } else {
+      if (event.code == "ArrowUp") {
+        if (now > 0) {
+          now = now - 1;
+          focus_a(now, elements);
+        }
+      }
+      if (event.code == "ArrowDown") {
+        if (now < elements.length - 1) {
+          now = now + 1;
+          focus_a(now, elements);
+        }
+      }
+    }
+  }
+
   if(event.code == "KeyF") {
     var elm = document.getElementsByClassName("fullscreen___fullscreen___1OXBx")[0];
     elm.click();
-  } else if(event.code == "KeyH") {
+  } else if(event.code == "KeyC") {
     var elm_switch = document.getElementsByClassName("video-switcher__label___1kJP3")[0];
     elm_switch.click();
   } else if(event.code == "KeyA") {
