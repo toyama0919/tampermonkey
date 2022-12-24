@@ -20,7 +20,7 @@ document.addEventListener("keydown", function(event) {
     elm_rewind.click();
   } else if(event.code == "KeyF") {
     // フルスクリーン
-    var elm = document.getElementsByClassName("sc-jzJRlG cfGAmp")[0];
+    var elm = document.getElementsByClassName("sc-jzJRlG bvlQoG")[0];
     elm.click();
   } else if(event.code == "Space") {
     // 一時停止-再生
