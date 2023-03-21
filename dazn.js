@@ -57,8 +57,11 @@ document.addEventListener("keydown", function(event) {
   if(event.code == "KeyF") {
     var elm = document.getElementsByClassName("fullscreen___fullscreen___1OXBx")[0];
     elm.click();
+  } else if(event.code == "KeyS") {
+    var elm_theatre = document.getElementsByClassName("theatreModeToggle___theatreModeToggle___17W1g")[0];
+    elm_theatre.click();
   } else if(event.code == "KeyC") {
-    var elm_switch = document.getElementsByClassName("video-switcher__label___1kJP3")[0];
+    var elm_switch = document.getElementsByClassName("video-switcher__label___k3jwc")[0];
     elm_switch.click();
   } else if(event.code == "KeyA") {
     var elm_rewind = document.getElementsByClassName("playbackButtons___playback-button___2bb6j")[0];
