@@ -13,7 +13,7 @@ document.addEventListener("keydown", function(event) {
   if(event.code == "KeyF") {
     var elm = document.getElementsByClassName("atvwebplayersdk-fullscreen-button")[0];
     elm.click();
-  } else if(event.code == "KeyC") {
+  } else if(event.code == "KeyS") {
     var elm_switch = document.getElementsByClassName("subtitles_fll_open_close_button_container")[0];
     elm_switch.click();
   }
