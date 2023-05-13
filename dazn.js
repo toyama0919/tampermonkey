@@ -4,8 +4,8 @@
 // @version      0.1
 // @description  try to take over the world!
 // @author       You
-// @match        https://www.dazn.com/ja-JP/fixture/ContentId:*
-// @match        https://www.dazn.com/ja-JP/schedule
+// @match        https://www.dazn.com/*/fixture/ContentId:*
+// @match        https://www.dazn.com/*/schedule
 // @grant        none
 // ==/UserScript==
 
