@@ -25,7 +25,7 @@ function paintSingle(number, argElements) {
   nowElement.focus();
 }
 
-var elements = filterHaveInnerHTML(document.querySelectorAll("div.yuRUbf>a"));
+var elements = filterHaveInnerHTML(document.querySelectorAll("div.yuRUbf>div>a"));
 var now = -99;
 
 var next_element = document.getElementById("pnnext");
