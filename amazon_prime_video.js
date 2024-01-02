@@ -16,5 +16,14 @@ document.addEventListener("keydown", function(event) {
   } else if(event.code == "KeyS") {
     var elm_switch = document.getElementsByClassName("subtitles_fll_open_close_button_container")[0];
     elm_switch.click();
+  } else if(event.code == "KeyX") {
+    var elm_off = document.querySelector('[aria-label="オフ"]');
+    if(elm_off.checked) {
+      var elm_jp = document.querySelector('[aria-label="日本語"]');
+      elm_off.checked = false;
+      elm_jp.checked = true;
+    } else {
+      elm_off.checked = true;
+    }
   }
 });

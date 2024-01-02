@@ -6,6 +6,8 @@
 // @author       You
 // @match        https://www.google.co.jp/search*
 // @match       https://www.google.co.jp/?gws_rd=ssl#q=*
+// @match        https://www.google.com/search*
+// @match       https://www.google.com/?gws_rd=ssl#q=*
 // @grant        none
 // ==/UserScript==
 function filterHaveInnerHTML(argElements) {
