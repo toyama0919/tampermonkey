@@ -19,6 +19,7 @@ function filterHaveInnerHTML(argElements) {
           elms.push(element);
       }
   }
+  elms.push(document.querySelector("div.WZH4jc.w7LJsc>a"))
   return elms;
 }
 
@@ -27,7 +28,7 @@ function paintSingle(number, argElements) {
   nowElement.focus();
 }
 
-var elements = filterHaveInnerHTML(document.querySelectorAll("div.yuRUbf>div>a"));
+var elements = filterHaveInnerHTML(document.querySelectorAll("div.yuRUbf>div>span>a"));
 var now = -99;
 
 var next_element = document.getElementById("pnnext");
