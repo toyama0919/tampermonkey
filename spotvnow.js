@@ -5,6 +5,7 @@
 // @description  try to take over the world!
 // @author       You
 // @match        https://www.spotvnow.jp/player?type=vod&id=*
+// @match        https://www.spotvnow.jp/schedule/*
 // @grant        none
 // ==/UserScript==
 
