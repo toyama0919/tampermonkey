@@ -31,12 +31,10 @@ function focus_element(number, argElements) {
 var elements = filterHaveInnerHTML(document.querySelectorAll("div.yuRUbf>div>span>a"));
 var now = -99;
 
-var next_element = document.getElementById("pnnext");
-var prev_element = document.getElementById("pnprev");
+var next_element = document.querySelector("div.WZH4jc.w7LJsc>a")
 document.documentElement.setAttribute('class', "zAoYTe")
 
 document.addEventListener("keydown", function(event) {
-  var id_str = document.activeElement.id;
   // まだ何もしていない
   if(now == -99) {
     if(event.code == "ArrowUp" || event.code == "ArrowDown") {
@@ -45,9 +43,8 @@ document.addEventListener("keydown", function(event) {
     }
   } else {
     switch (event.key) {
-      case "ArrowRight":
-        var next_page_element = document.querySelector("div.WZH4jc.w7LJsc>a")
-        next_page_element.click();
+      case "PageDown":
+        next_element.click();
         setTimeout(function() {
           elements = filterHaveInnerHTML(document.querySelectorAll("a[jsname='UWckNb']"));
         }, 1500);
@@ -56,36 +53,9 @@ document.addEventListener("keydown", function(event) {
         if (now < elements.length - 1) {
           now = now + 1;
           focus_element(now, elements);
-        } else {
-          if (id_str == "pnprev") {
-            next_element.focus();
-          } else {
-            if (id_str == "pnnext") {
-              return;
-            }
-            if (prev_element) {
-              prev_element.focus();
-            } else {
-              next_element.focus();
-            }
-          }
         }
         break;
       case "ArrowUp":
-        if (now == elements.length - 1) {
-          if (id_str == "pnnext") {
-            if (prev_element) {
-              prev_element.focus();
-            } else {
-              focus_element(now, elements);
-            }
-            return;
-          }
-          if (id_str == "pnprev") {
-            focus_element(now, elements);
-            return;
-          }
-        }
         if (now > 0) {
           now = now - 1;
           focus_element(now, elements);
