@@ -28,7 +28,8 @@ function focus_element(number, argElements) {
   nowElement.focus();
 }
 
-var elements = filterHaveInnerHTML(document.querySelectorAll("div.yuRUbf>div>span>a"));
+// var elements = filterHaveInnerHTML(document.querySelectorAll("div.yuRUbf>div>span>a"));
+var elements = filterHaveInnerHTML(document.querySelectorAll("a[jsname='UWckNb']"));
 var now = -99;
 
 var next_element = document.querySelector("div.WZH4jc.w7LJsc>a")
@@ -43,16 +44,16 @@ document.addEventListener("keydown", function(event) {
     }
   } else {
     switch (event.key) {
-      case "PageDown":
-        next_element.click();
-        setTimeout(function() {
-          elements = filterHaveInnerHTML(document.querySelectorAll("a[jsname='UWckNb']"));
-        }, 1500);
-        break;
       case "ArrowDown":
         if (now < elements.length - 1) {
           now = now + 1;
           focus_element(now, elements);
+        }
+        if (now == (elements.length - 1)) {
+          next_element.click();
+          setTimeout(function() {
+            elements = filterHaveInnerHTML(document.querySelectorAll("a[jsname='UWckNb']"));
+          }, 1500);
         }
         break;
       case "ArrowUp":
