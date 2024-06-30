@@ -23,7 +23,7 @@ function filterHaveInnerHTML(argElements) {
   return elms;
 }
 
-function paintSingle(number, argElements) {
+function focus_element(number, argElements) {
   var nowElement = argElements[number];
   nowElement.focus();
 }
@@ -37,50 +37,62 @@ document.documentElement.setAttribute('class', "zAoYTe")
 
 document.addEventListener("keydown", function(event) {
   var id_str = document.activeElement.id;
+  // まだ何もしていない
   if(now == -99) {
     if(event.code == "ArrowUp" || event.code == "ArrowDown") {
       now = 0;
-      paintSingle(now, elements);
+      focus_element(now, elements);
     }
   } else {
-    if (event.code == "ArrowUp") {
-      if (now == elements.length - 1) {
-        if (id_str == "pnnext") {
-          if (prev_element) {
-            prev_element.focus();
-          } else {
-            paintSingle(now, elements);
-          }
-          return;
-        }
-        if (id_str == "pnprev") {
-          paintSingle(now, elements);
-          return;
-        }
-      }
-      if (now > 0) {
-        now = now - 1;
-        paintSingle(now, elements);
-      }
-    }
-    if (event.code == "ArrowDown") {
-      if (now < elements.length - 1) {
-        now = now + 1;
-        paintSingle(now, elements);
-      } else {
-        if (id_str == "pnprev") {
-          next_element.focus();
+    switch (event.key) {
+      case "ArrowRight":
+        var next_page_element = document.querySelector("div.WZH4jc.w7LJsc>a")
+        next_page_element.click();
+        setTimeout(function() {
+          elements = filterHaveInnerHTML(document.querySelectorAll("a[jsname='UWckNb']"));
+        }, 1500);
+        break;
+      case "ArrowDown":
+        if (now < elements.length - 1) {
+          now = now + 1;
+          focus_element(now, elements);
         } else {
+          if (id_str == "pnprev") {
+            next_element.focus();
+          } else {
+            if (id_str == "pnnext") {
+              return;
+            }
+            if (prev_element) {
+              prev_element.focus();
+            } else {
+              next_element.focus();
+            }
+          }
+        }
+        break;
+      case "ArrowUp":
+        if (now == elements.length - 1) {
           if (id_str == "pnnext") {
+            if (prev_element) {
+              prev_element.focus();
+            } else {
+              focus_element(now, elements);
+            }
             return;
           }
-          if (prev_element) {
-            prev_element.focus();
-          } else {
-            next_element.focus();
+          if (id_str == "pnprev") {
+            focus_element(now, elements);
+            return;
           }
         }
-      }
+        if (now > 0) {
+          now = now - 1;
+          focus_element(now, elements);
+        }
+        break;
+      default:
+        break;
     }
   }
 });
