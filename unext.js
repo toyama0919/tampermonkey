@@ -8,18 +8,6 @@
 // @grant        none
 // ==/UserScript==
 
-function get_elements(argElements) {
-  var i;
-  var elms = [];
-  for(i=0;i < argElements.length;i++){
-      var element = argElements[i];
-      if(element.innerHTML !== "") {
-          elms.push(element);
-      }
-  }
-  return elms;
-}
-
 document.addEventListener("keydown", function(event) {
   // 各種操作
   if(event.code == "Space") {
