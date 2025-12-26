@@ -119,7 +119,7 @@ function scrollChatArea(direction) {
   const chatArea = getChatArea();
 
   // ビューポートの高さの80%くらいスクロール
-  const scrollAmount = window.innerHeight * 0.8;
+  const scrollAmount = window.innerHeight * 0.6;
 
   if (direction === 'up') {
     if (chatArea === document.documentElement || chatArea === document.body) {
