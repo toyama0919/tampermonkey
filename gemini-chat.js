@@ -77,6 +77,65 @@ function moveHistoryDown() {
   highlightHistory(selectedHistoryIndex + 1);
 }
 
+// チャットエリアを取得
+function getChatArea() {
+  // Geminiのチャット履歴のスクロールコンテナを探す
+  const chatHistory = document.querySelector('infinite-scroller.chat-history');
+  if (chatHistory && chatHistory.scrollHeight > chatHistory.clientHeight) {
+    return chatHistory;
+  }
+
+  // スクロール可能な要素を探す
+  // まずwindow自体がスクロール対象かチェック
+  if (document.documentElement.scrollHeight > document.documentElement.clientHeight) {
+    return document.documentElement;
+  }
+
+  // 複数のパターンでチャットエリアを探す
+  const selectors = [
+    'infinite-scroller',
+    'main[class*="main"]',
+    '.conversation-container',
+    '[class*="chat-history"]',
+    '[class*="messages"]',
+    'main',
+    '[class*="scroll"]',
+    'div[class*="conversation"]'
+  ];
+
+  for (const selector of selectors) {
+    const element = document.querySelector(selector);
+    if (element && element.scrollHeight > element.clientHeight) {
+      return element;
+    }
+  }
+
+  // 見つからない場合はbodyかdocumentElementを返す
+  return document.documentElement;
+}
+
+// チャットエリアをスクロール
+function scrollChatArea(direction) {
+  const chatArea = getChatArea();
+
+  // ビューポートの高さの80%くらいスクロール
+  const scrollAmount = window.innerHeight * 0.8;
+
+  if (direction === 'up') {
+    if (chatArea === document.documentElement || chatArea === document.body) {
+      window.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+    } else {
+      chatArea.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+    }
+  } else if (direction === 'down') {
+    if (chatArea === document.documentElement || chatArea === document.body) {
+      window.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+    } else {
+      chatArea.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+    }
+  }
+}
+
 // テキストエリアにフォーカス
 function focusTextarea() {
   const textarea = document.querySelector('rich-textarea[aria-label*="Enter"]') ||
@@ -106,8 +165,15 @@ document.addEventListener("keydown", function(event) {
   if (event.code === "Home" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
     event.preventDefault();
     historySelectionMode = true;
-    selectedHistoryIndex = 0;
-    highlightHistory(0);
+    // 前回の位置を保持（初回のみ0にする）
+    if (selectedHistoryIndex === undefined) {
+      selectedHistoryIndex = 0;
+    }
+    // テキストエリアからフォーカスを外す
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
+    highlightHistory(selectedHistoryIndex);
     return;
   }
 
@@ -125,6 +191,20 @@ document.addEventListener("keydown", function(event) {
       exitHistorySelectionMode();
     }
     focusTextarea();
+    return;
+  }
+
+  // PageUp: チャットエリアを上にスクロール
+  if (event.code === "PageUp") {
+    event.preventDefault();
+    scrollChatArea('up');
+    return;
+  }
+
+  // PageDown: チャットエリアを下にスクロール
+  if (event.code === "PageDown") {
+    event.preventDefault();
+    scrollChatArea('down');
     return;
   }
 
