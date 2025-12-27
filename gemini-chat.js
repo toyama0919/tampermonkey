@@ -188,26 +188,34 @@ document.addEventListener("keydown", function(event) {
   // 入力欄にフォーカスがある場合は履歴操作を無効化（履歴選択モード以外）
   const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
 
-  // Insert: 新規チャット作成
-  if (event.code === "Insert") {
+  // Home: 新規チャット作成
+  if (event.code === "Home" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
     event.preventDefault();
     createNewChat();
     return;
   }
 
-  // Home: 履歴選択モードの開始
-  if (event.code === "Home" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+  // End: 履歴選択モードと入力欄フォーカスのトグル
+  if (event.code === "End" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
     event.preventDefault();
-    historySelectionMode = true;
-    // 前回の位置を保持（初回のみ0にする）
-    if (selectedHistoryIndex === undefined) {
-      selectedHistoryIndex = 0;
+
+    if (historySelectionMode) {
+      // 履歴選択モード中なら、入力欄にフォーカス
+      exitHistorySelectionMode();
+      focusTextarea();
+    } else {
+      // それ以外なら、履歴選択モードに入る
+      historySelectionMode = true;
+      // 前回の位置を保持（初回のみ0にする）
+      if (selectedHistoryIndex === undefined) {
+        selectedHistoryIndex = 0;
+      }
+      // テキストエリアからフォーカスを外す
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
+      highlightHistory(selectedHistoryIndex);
     }
-    // テキストエリアからフォーカスを外す
-    if (document.activeElement) {
-      document.activeElement.blur();
-    }
-    highlightHistory(selectedHistoryIndex);
     return;
   }
 
@@ -215,16 +223,6 @@ document.addEventListener("keydown", function(event) {
   if (historySelectionMode && event.code === "Escape") {
     event.preventDefault();
     exitHistorySelectionMode();
-    return;
-  }
-
-  // End: テキストエリアにフォーカス
-  if (event.code === "End" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
-    event.preventDefault();
-    if (historySelectionMode) {
-      exitHistorySelectionMode();
-    }
-    focusTextarea();
     return;
   }
 
