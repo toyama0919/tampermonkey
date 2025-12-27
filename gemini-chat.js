@@ -136,6 +136,33 @@ function scrollChatArea(direction) {
   }
 }
 
+// 新規チャットを作成
+function createNewChat() {
+  // 新規チャットボタンを探してクリック
+  const buttonContent = document.querySelector('[data-test-id="side-nav-action-button-content"]');
+
+  if (buttonContent) {
+    // 親要素のボタンを探す
+    const button = buttonContent.closest('button') ||
+                   buttonContent.closest('side-nav-action-button');
+    if (button) {
+      button.click();
+      return;
+    }
+  }
+
+  // 代替方法：テキストで探す
+  const buttons = Array.from(document.querySelectorAll('side-nav-action-button'));
+  const newChatButton = buttons.find(btn =>
+    btn.textContent.includes('新規') ||
+    btn.textContent.includes('New chat')
+  );
+
+  if (newChatButton) {
+    newChatButton.click();
+  }
+}
+
 // テキストエリアにフォーカス
 function focusTextarea() {
   const textarea = document.querySelector('rich-textarea[aria-label*="Enter"]') ||
@@ -160,6 +187,13 @@ function focusTextarea() {
 document.addEventListener("keydown", function(event) {
   // 入力欄にフォーカスがある場合は履歴操作を無効化（履歴選択モード以外）
   const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
+
+  // Insert: 新規チャット作成
+  if (event.code === "Insert") {
+    event.preventDefault();
+    createNewChat();
+    return;
+  }
 
   // Home: 履歴選択モードの開始
   if (event.code === "Home" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
