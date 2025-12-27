@@ -1,11 +1,13 @@
 // ==UserScript==
-// @name         github issue
+// @name         GitHub Issue Search
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for GitHub issue search
+// @author       toyama0919
 // @match        https://github.com/*/*/issues?utf8=%E2%9C%93&q=*
 // @match        https://github.com/*/*/issues?page=*&q=*&utf8=%E2%9C%93
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/github_issue_search.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/github_issue_search.js
 // @grant        none
 // ==/UserScript==
 function filterHaveInnerHTML(argElements) {

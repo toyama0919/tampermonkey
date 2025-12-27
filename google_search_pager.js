@@ -1,13 +1,15 @@
 // ==UserScript==
-// @name         Google search
+// @name         Google search pager
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Google search pagination improvements
+// @author       toyama0919
 // @match        https://www.google.co.jp/search*
-// @match       https://www.google.co.jp/?gws_rd=ssl#q=*
+// @match        https://www.google.co.jp/?gws_rd=ssl#q=*
 // @match        https://www.google.com/search*
-// @match       https://www.google.com/?gws_rd=ssl#q=*
+// @match        https://www.google.com/?gws_rd=ssl#q=*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search_pager.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search_pager.js
 // @grant        none
 // ==/UserScript==
 function filterHaveInnerHTML(argElements) {

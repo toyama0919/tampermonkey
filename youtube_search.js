@@ -1,11 +1,13 @@
 // ==UserScript==
-// @name         youtube_search
+// @name         YouTube Search
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for YouTube search
+// @author       toyama0919
 // @match        https://www.youtube.com/results?search_query=*
 // @match        https://youtube.com/results?search_query=*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_search.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_search.js
 // @grant        none
 // ==/UserScript==
 

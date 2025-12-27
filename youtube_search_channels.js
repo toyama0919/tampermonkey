@@ -1,14 +1,16 @@
 // ==UserScript==
-// @name         youtube_channels
+// @name         YouTube Channels
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for YouTube channels
+// @author       toyama0919
 // @match        https://www.youtube.com/channel/*/videos
 // @match        https://www.youtube.com/c/*/videos
 // @match        https://youtube.com/channel/*/videos
 // @match        https://youtube.com/c/*/videos
 // @match        https://www.youtube.com/
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_search_channels.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_search_channels.js
 // @grant        none
 // ==/UserScript==
 

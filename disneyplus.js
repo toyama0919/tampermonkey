@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         disneyplus
+// @name         Disney+
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for Disney+
+// @author       toyama0919
 // @match        https://www.disneyplus.com/ja-jp/video/*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/disneyplus.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/disneyplus.js
 // @grant        none
 // ==/UserScript==
 

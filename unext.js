@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         unext
+// @name         U-NEXT
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for U-NEXT
+// @author       toyama0919
 // @match        https://video.unext.jp/play/*/*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/unext.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/unext.js
 // @grant        none
 // ==/UserScript==
 

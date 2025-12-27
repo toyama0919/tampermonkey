@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         Google search News
+// @name         Google Search News
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for Google News search
+// @author       toyama0919
 // @match        https://www.google.co.jp/search?tbm=nws&*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search_news.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search_news.js
 // @grant        none
 // ==/UserScript==
 function filterHaveInnerHTML(argElements) {

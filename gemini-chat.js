@@ -2,9 +2,11 @@
 // @name         gemini-chat
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Gemini Chat UI improvements with keyboard shortcuts
+// @author       toyama0919
 // @match        https://gemini.google.com/app*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/gemini-chat.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/gemini-chat.js
 // @grant        none
 // ==/UserScript==
 

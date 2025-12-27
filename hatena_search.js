@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         Hatena
+// @name         Hatena Search
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for Hatena Bookmark search
+// @author       toyama0919
 // @match        https://b.hatena.ne.jp/search/text?safe=on&sort=recent&q=*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/hatena_search.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/hatena_search.js
 // @grant        none
 // ==/UserScript==
 function filterHaveInnerHTML(argElements) {

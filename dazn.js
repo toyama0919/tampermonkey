@@ -1,11 +1,13 @@
 // ==UserScript==
-// @name         dazn
+// @name         DAZN
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for DAZN
+// @author       toyama0919
 // @match        https://www.dazn.com/*/fixture/ContentId:*
 // @match        https://www.dazn.com/*/schedule
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/dazn.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/dazn.js
 // @grant        none
 // ==/UserScript==
 

@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         azure-openai-chat
+// @name         Azure OpenAI Chat
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  UI improvements for Azure OpenAI Chat
+// @author       toyama0919
 // @match        https://ai.azure.com/resource/playground?*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/azure-openai-chat.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/azure-openai-chat.js
 // @grant        none
 // ==/UserScript==
 

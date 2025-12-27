@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         amazon_prime_video
+// @name         Amazon Prime Video
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for Amazon Prime Video
+// @author       toyama0919
 // @match        https://www.amazon.co.jp/gp/video/detail/*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/amazon_prime_video.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/amazon_prime_video.js
 // @grant        none
 // ==/UserScript==
 

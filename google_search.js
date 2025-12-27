@@ -1,13 +1,15 @@
 // ==UserScript==
-// @name         Google search
+// @name         Google Search
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Keyboard shortcuts for Google search
+// @author       toyama0919
 // @match        https://www.google.co.jp/search*
-// @match       https://www.google.co.jp/?gws_rd=ssl#q=*
+// @match        https://www.google.co.jp/?gws_rd=ssl#q=*
 // @match        https://www.google.com/search*
-// @match       https://www.google.com/?gws_rd=ssl#q=*
+// @match        https://www.google.com/?gws_rd=ssl#q=*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search.js
 // @grant        none
 // ==/UserScript==
 function filterHaveInnerHTML(argElements) {
