@@ -57,9 +57,25 @@ function openSelectedHistory() {
       item.style.outlineOffset = '';
     });
 
-    // ページ遷移後に入力欄にフォーカス
+    // ページ遷移後に入力欄をクリアしてフォーカス
     setTimeout(() => {
-      focusTextarea();
+      const textarea = document.querySelector('rich-textarea[aria-label*="Enter"]') ||
+                       document.querySelector('textarea') ||
+                       document.querySelector('[contenteditable="true"]') ||
+                       document.querySelector('div[role="textbox"]');
+
+      if (textarea) {
+        // 内容をクリア
+        if (textarea.contentEditable === 'true') {
+          textarea.textContent = '';
+          textarea.innerHTML = '';
+        } else if (textarea.value !== undefined) {
+          textarea.value = '';
+        }
+
+        // フォーカス
+        textarea.focus();
+      }
     }, 500);
   }
 }
