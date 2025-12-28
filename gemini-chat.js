@@ -56,6 +56,11 @@ function openSelectedHistory() {
       item.style.outline = '';
       item.style.outlineOffset = '';
     });
+
+    // ページ遷移後に入力欄にフォーカス
+    setTimeout(() => {
+      focusTextarea();
+    }, 500);
   }
 }
 
