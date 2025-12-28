@@ -48,36 +48,53 @@ function highlightHistory(index) {
 // 履歴を開く
 function openSelectedHistory() {
   const items = getHistoryItems();
-  if (items.length > 0 && items[selectedHistoryIndex]) {
-    items[selectedHistoryIndex].click();
-    historySelectionMode = false; // モード解除
-    // ハイライトをクリア
-    items.forEach(item => {
-      item.style.outline = '';
-      item.style.outlineOffset = '';
-    });
+  if (items.length === 0 || !items[selectedHistoryIndex]) return;
 
-    // ページ遷移後に入力欄をクリアしてフォーカス
-    setTimeout(() => {
-      const textarea = document.querySelector('rich-textarea[aria-label*="Enter"]') ||
-                       document.querySelector('textarea') ||
-                       document.querySelector('[contenteditable="true"]') ||
-                       document.querySelector('div[role="textbox"]');
+  items[selectedHistoryIndex].click();
+  historySelectionMode = false;
 
-      if (textarea) {
-        // 内容をクリア
-        if (textarea.contentEditable === 'true') {
-          textarea.textContent = '';
-          textarea.innerHTML = '';
-        } else if (textarea.value !== undefined) {
-          textarea.value = '';
-        }
+  // ハイライトをクリア
+  items.forEach(item => {
+    item.style.outline = '';
+    item.style.outlineOffset = '';
+  });
 
-        // フォーカス
-        textarea.focus();
+  // ページ遷移後に入力欄をクリアしてフォーカス
+  clearAndFocusTextarea();
+}
+
+// 入力欄をクリアしてフォーカス（ページ遷移後の要素を待つ）
+function clearAndFocusTextarea() {
+  let attempts = 0;
+  const maxAttempts = 10;
+
+  const interval = setInterval(() => {
+    attempts++;
+    const textarea = document.querySelector('div[contenteditable="true"][role="textbox"]');
+
+    if (textarea) {
+      clearInterval(interval);
+
+      // 内容をクリア（DOM操作で安全に）
+      while (textarea.firstChild) {
+        textarea.removeChild(textarea.firstChild);
       }
-    }, 500);
-  }
+
+      // Geminiの空状態の構造を再作成
+      const p = document.createElement('p');
+      const br = document.createElement('br');
+      p.appendChild(br);
+      textarea.appendChild(p);
+
+      // フォーカス
+      textarea.focus();
+
+      // inputイベントを発火
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (attempts >= maxAttempts) {
+      clearInterval(interval);
+    }
+  }, 200);
 }
 
 // 履歴選択モードを解除
@@ -108,13 +125,12 @@ function getChatArea() {
     return chatHistory;
   }
 
-  // スクロール可能な要素を探す
-  // まずwindow自体がスクロール対象かチェック
+  // window自体がスクロール対象かチェック
   if (document.documentElement.scrollHeight > document.documentElement.clientHeight) {
     return document.documentElement;
   }
 
-  // 複数のパターンでチャットエリアを探す
+  // その他のパターンでチャットエリアを探す
   const selectors = [
     'infinite-scroller',
     'main[class*="main"]',
@@ -133,41 +149,28 @@ function getChatArea() {
     }
   }
 
-  // 見つからない場合はbodyかdocumentElementを返す
   return document.documentElement;
 }
 
 // チャットエリアをスクロール
 function scrollChatArea(direction) {
   const chatArea = getChatArea();
-
-  // ビューポートの高さの80%くらいスクロール
   const scrollAmount = window.innerHeight * 0.6;
+  const scrollValue = direction === 'up' ? -scrollAmount : scrollAmount;
 
-  if (direction === 'up') {
-    if (chatArea === document.documentElement || chatArea === document.body) {
-      window.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
-    } else {
-      chatArea.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
-    }
-  } else if (direction === 'down') {
-    if (chatArea === document.documentElement || chatArea === document.body) {
-      window.scrollBy({ top: scrollAmount, behavior: 'smooth' });
-    } else {
-      chatArea.scrollBy({ top: scrollAmount, behavior: 'smooth' });
-    }
+  if (chatArea === document.documentElement || chatArea === document.body) {
+    window.scrollBy({ top: scrollValue, behavior: 'smooth' });
+  } else {
+    chatArea.scrollBy({ top: scrollValue, behavior: 'smooth' });
   }
 }
 
 // 新規チャットを作成
 function createNewChat() {
-  // 新規チャットボタンを探してクリック
   const buttonContent = document.querySelector('[data-test-id="side-nav-action-button-content"]');
 
   if (buttonContent) {
-    // 親要素のボタンを探す
-    const button = buttonContent.closest('button') ||
-                   buttonContent.closest('side-nav-action-button');
+    const button = buttonContent.closest('button') || buttonContent.closest('side-nav-action-button');
     if (button) {
       button.click();
       return;
@@ -177,8 +180,7 @@ function createNewChat() {
   // 代替方法：テキストで探す
   const buttons = Array.from(document.querySelectorAll('side-nav-action-button'));
   const newChatButton = buttons.find(btn =>
-    btn.textContent.includes('新規') ||
-    btn.textContent.includes('New chat')
+    btn.textContent.includes('新規') || btn.textContent.includes('New chat')
   );
 
   if (newChatButton) {
@@ -188,22 +190,21 @@ function createNewChat() {
 
 // テキストエリアにフォーカス
 function focusTextarea() {
-  const textarea = document.querySelector('rich-textarea[aria-label*="Enter"]') ||
-                   document.querySelector('textarea') ||
-                   document.querySelector('[contenteditable="true"]') ||
-                   document.querySelector('div[role="textbox"]');
+  const textarea = document.querySelector('div[contenteditable="true"][role="textbox"]') ||
+                   document.querySelector('[contenteditable="true"]');
 
-  if (textarea) {
-    textarea.focus();
-    // contenteditable要素の場合、カーソルを末尾に移動
-    if (textarea.contentEditable === 'true') {
-      const range = document.createRange();
-      const sel = window.getSelection();
-      range.selectNodeContents(textarea);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
+  if (!textarea) return;
+
+  textarea.focus();
+
+  // contenteditable要素の場合、カーソルを末尾に移動
+  if (textarea.contentEditable === 'true') {
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(textarea);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
   }
 }
 
