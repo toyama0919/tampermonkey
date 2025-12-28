@@ -12,82 +12,116 @@
 // @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search_pager.js
 // @grant        none
 // ==/UserScript==
-function filterHaveInnerHTML(argElements) {
-  var i;
-  var elms = [];
-  for(i=0;i < argElements.length;i++){
-      var element = argElements[i];
-      if(element.innerHTML !== "") {
-          elms.push(element);
-      }
+
+(function() {
+  'use strict';
+
+  const NOT_INITIALIZED = -99;
+
+  function filterNonEmptyElements(elements) {
+    return Array.from(elements).filter(element => element.innerHTML !== "");
   }
-  return elms;
-}
 
-function focus_element(number, argElements) {
-  var nowElement = argElements[number];
-  nowElement.focus();
-}
+  function focusElement(index, elements) {
+    elements[index].focus();
+  }
 
-// var elements = filterHaveInnerHTML(document.querySelectorAll("div.yuRUbf>div>span>a"));
-var elements = filterHaveInnerHTML(document.querySelectorAll("a[jsname='UWckNb']"));
-var now = -99;
-
-var next_element = document.getElementById("pnnext");
-var prev_element = document.getElementById("pnprev");
-document.documentElement.setAttribute('class', "zAoYTe")
-
-document.addEventListener("keydown", function(event) {
-  var id_str = document.activeElement.id;
-  // まだ何もしていない
-  if(now == -99) {
-    if(event.code == "ArrowUp" || event.code == "ArrowDown") {
-      now = 0;
-      focus_element(now, elements);
+  function handleArrowDown(currentIndex, elements, nextElement, prevElement, activeElementId) {
+    if (currentIndex < elements.length - 1) {
+      return currentIndex + 1;
     }
-  } else {
+
+    // 最後の要素に到達した場合、ページネーション要素にフォーカス
+    if (activeElementId === "pnprev") {
+      nextElement.focus();
+    } else if (activeElementId !== "pnnext") {
+      if (prevElement) {
+        prevElement.focus();
+      } else {
+        nextElement.focus();
+      }
+    }
+
+    return currentIndex;
+  }
+
+  function handleArrowUp(currentIndex, elements, nextElement, prevElement, activeElementId) {
+    if (currentIndex === elements.length - 1) {
+      if (activeElementId === "pnnext") {
+        if (prevElement) {
+          prevElement.focus();
+        } else {
+          focusElement(currentIndex, elements);
+        }
+        return currentIndex;
+      }
+      if (activeElementId === "pnprev") {
+        focusElement(currentIndex, elements);
+        return currentIndex;
+      }
+    }
+
+    if (currentIndex > 0) {
+      return currentIndex - 1;
+    }
+
+    return currentIndex;
+  }
+
+  // 検索結果リンクを取得
+  const searchResultElements = filterNonEmptyElements(
+    document.querySelectorAll("a[jsname='UWckNb']")
+  );
+
+  let currentIndex = NOT_INITIALIZED;
+
+  const nextElement = document.getElementById("pnnext");
+  const prevElement = document.getElementById("pnprev");
+
+  document.documentElement.setAttribute('class', "zAoYTe");
+
+  document.addEventListener("keydown", (event) => {
+    const activeElementId = document.activeElement.id;
+
+    // 初回の矢印キー入力で最初の要素にフォーカス
+    if (currentIndex === NOT_INITIALIZED) {
+      if (event.code === "ArrowUp" || event.code === "ArrowDown") {
+        currentIndex = 0;
+        focusElement(currentIndex, searchResultElements);
+      }
+      return;
+    }
+
+    let newIndex = currentIndex;
+
     switch (event.key) {
       case "ArrowDown":
-        if (now < elements.length - 1) {
-          now = now + 1;
-          focus_element(now, elements);
-        } else {
-          if (id_str == "pnprev") {
-            next_element.focus();
-          } else {
-            if (id_str == "pnnext") {
-              break;
-            }
-            if (prev_element) {
-              prev_element.focus();
-            } else {
-              next_element.focus();
-            }
-          }
-        }
+        newIndex = handleArrowDown(
+          currentIndex,
+          searchResultElements,
+          nextElement,
+          prevElement,
+          activeElementId
+        );
         break;
+
       case "ArrowUp":
-        if (now == elements.length - 1) {
-          if (id_str == "pnnext") {
-            if (prev_element) {
-              prev_element.focus();
-            } else {
-              focus_element(now, elements);
-            }
-            break;
-          }
-          if (id_str == "pnprev") {
-            focus_element(now, elements);
-            break;
-          }
-        }
-        if (now > 0) {
-          now = now - 1;
-          focus_element(now, elements);
-        }
+        newIndex = handleArrowUp(
+          currentIndex,
+          searchResultElements,
+          nextElement,
+          prevElement,
+          activeElementId
+        );
         break;
+
       default:
-        break;
+        return;
     }
-  }
-});
+
+    if (newIndex !== currentIndex) {
+      currentIndex = newIndex;
+      focusElement(currentIndex, searchResultElements);
+    }
+  });
+})();
