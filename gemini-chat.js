@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         gemini-chat
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  Gemini Chat UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://gemini.google.com/app*
@@ -12,30 +12,31 @@
 
 
 // ページ読み込み時にサイドメニューを開く
-function ensureSidebarOpen() {
-  // サイドバーが既に開いているか確認
-  const sidebar = document.querySelector('.conversation-items-container');
+let lastClickTime = 0;
 
-  console.log('Sidebar element:', sidebar);
-  console.log('Sidebar width:', sidebar?.offsetWidth);
+function ensureSidebarOpen() {
+  const sidebar = document.querySelector('.conversation-items-container');
 
   // サイドバーの幅が100px以上なら開いている（46pxは閉じている状態）
   if (sidebar && sidebar.offsetWidth > 100) {
-    console.log('Sidebar is already open');
-    return true; // 既に開いている
+    return true;
+  }
+
+  // 最後にクリックしてから1秒以内なら何もしない（アニメーション待ち）
+  const now = Date.now();
+  if (now - lastClickTime < 1000) {
+    return false;
   }
 
   // 閉じている場合、メニューボタンをクリック
   const menuButton = document.querySelector('button[data-test-id="side-nav-menu-button"]');
 
-  console.log('Menu button:', menuButton);
-
   if (menuButton) {
-    console.log('Clicking menu button');
     menuButton.click();
+    lastClickTime = now;
   }
 
-  return false; // まだ開いていない（次の試行で確認）
+  return false;
 }
 
 // ページ読み込み後に実行（一度開いたら停止）
@@ -43,7 +44,6 @@ let sidebarAttempts = 0;
 let sidebarOpened = false;
 const sidebarInterval = setInterval(() => {
   sidebarAttempts++;
-  console.log(`Sidebar attempt ${sidebarAttempts}`);
 
   if (!sidebarOpened) {
     sidebarOpened = ensureSidebarOpen();
@@ -51,7 +51,6 @@ const sidebarInterval = setInterval(() => {
 
   // 開いたら、または10回試行したら停止
   if (sidebarOpened || sidebarAttempts >= 10) {
-    console.log('Stopping sidebar attempts');
     clearInterval(sidebarInterval);
   }
 }, 500);
