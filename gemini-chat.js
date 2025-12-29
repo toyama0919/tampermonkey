@@ -11,6 +11,51 @@
 // ==/UserScript==
 
 
+// ページ読み込み時にサイドメニューを開く
+function ensureSidebarOpen() {
+  // サイドバーが既に開いているか確認
+  const sidebar = document.querySelector('.conversation-items-container');
+
+  console.log('Sidebar element:', sidebar);
+  console.log('Sidebar width:', sidebar?.offsetWidth);
+
+  // サイドバーの幅が100px以上なら開いている（46pxは閉じている状態）
+  if (sidebar && sidebar.offsetWidth > 100) {
+    console.log('Sidebar is already open');
+    return true; // 既に開いている
+  }
+
+  // 閉じている場合、メニューボタンをクリック
+  const menuButton = document.querySelector('button[data-test-id="side-nav-menu-button"]');
+
+  console.log('Menu button:', menuButton);
+
+  if (menuButton) {
+    console.log('Clicking menu button');
+    menuButton.click();
+  }
+
+  return false; // まだ開いていない（次の試行で確認）
+}
+
+// ページ読み込み後に実行（一度開いたら停止）
+let sidebarAttempts = 0;
+let sidebarOpened = false;
+const sidebarInterval = setInterval(() => {
+  sidebarAttempts++;
+  console.log(`Sidebar attempt ${sidebarAttempts}`);
+
+  if (!sidebarOpened) {
+    sidebarOpened = ensureSidebarOpen();
+  }
+
+  // 開いたら、または10回試行したら停止
+  if (sidebarOpened || sidebarAttempts >= 10) {
+    console.log('Stopping sidebar attempts');
+    clearInterval(sidebarInterval);
+  }
+}, 500);
+
 // チャット履歴選択の管理
 let selectedHistoryIndex = 0;
 let historySelectionMode = false;
