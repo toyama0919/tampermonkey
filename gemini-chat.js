@@ -263,7 +263,7 @@ document.addEventListener("keydown", function(event) {
     return;
   }
 
-  // End: 履歴選択モードと入力欄フォーカスのトグル
+  // End: テキストエリア ⇔ 履歴選択モードのトグル
   if (event.code === "End" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
     event.preventDefault();
 
@@ -271,8 +271,8 @@ document.addEventListener("keydown", function(event) {
       // 履歴選択モード中なら、入力欄にフォーカス
       exitHistorySelectionMode();
       focusTextarea();
-    } else {
-      // それ以外なら、履歴選択モードに入る
+    } else if (isInInput) {
+      // テキストエリアにいるなら、履歴選択モードに入る
       historySelectionMode = true;
       // 前回の位置を保持（初回のみ0にする）
       if (selectedHistoryIndex === undefined) {
@@ -283,6 +283,9 @@ document.addEventListener("keydown", function(event) {
         document.activeElement.blur();
       }
       highlightHistory(selectedHistoryIndex);
+    } else {
+      // それ以外なら、まずテキストエリアにフォーカス
+      focusTextarea();
     }
     return;
   }
