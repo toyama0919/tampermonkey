@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  ChatGPT UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://chatgpt.com/*

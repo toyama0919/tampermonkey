@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         gemini-chat
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Gemini Chat UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://gemini.google.com/app*
