@@ -1,71 +1,155 @@
 // ==UserScript==
-// @name         Google Search
+// @name         Google search pager
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Keyboard shortcuts for Google search
+// @description  Google search pagination improvements
 // @author       toyama0919
 // @match        https://www.google.co.jp/search*
 // @match        https://www.google.co.jp/?gws_rd=ssl#q=*
 // @match        https://www.google.com/search*
 // @match        https://www.google.com/?gws_rd=ssl#q=*
-// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search.js
-// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search.js
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search_pager.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/google_search_pager.js
 // @grant        none
 // ==/UserScript==
-function filterHaveInnerHTML(argElements) {
-  var i;
-  var elms = [];
-  for(i=0;i < argElements.length;i++){
-      var element = argElements[i];
-      if(element.innerHTML !== "") {
-          elms.push(element);
-      }
+
+(function() {
+  'use strict';
+
+  const NOT_INITIALIZED = -99;
+
+  function filterNonEmptyElements(elements) {
+    return Array.from(elements).filter(element => element.innerHTML !== "");
   }
-  elms.push(document.querySelector("div.WZH4jc.w7LJsc>a"))
-  return elms;
-}
 
-function focus_element(number, argElements) {
-  var nowElement = argElements[number];
-  nowElement.focus();
-}
+  function focusElement(index, elements) {
+    elements[index].focus();
+  }
 
-// var elements = filterHaveInnerHTML(document.querySelectorAll("div.yuRUbf>div>span>a"));
-var elements = filterHaveInnerHTML(document.querySelectorAll("a[jsname='UWckNb']"));
-var now = -99;
-
-var next_element = document.querySelector("div.WZH4jc.w7LJsc>a")
-document.documentElement.setAttribute('class', "zAoYTe")
-
-document.addEventListener("keydown", function(event) {
-  // まだ何もしていない
-  if(now == -99) {
-    if(event.code == "ArrowUp" || event.code == "ArrowDown") {
-      now = 0;
-      focus_element(now, elements);
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('URL copied:', text);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
     }
-  } else {
+  }
+
+  function handleArrowDown(currentIndex, elements, nextElement, prevElement, activeElementId) {
+    if (currentIndex < elements.length - 1) {
+      return currentIndex + 1;
+    }
+
+    // 最後の要素に到達した場合、ページネーション要素にフォーカス
+    if (activeElementId === "pnprev") {
+      nextElement.focus();
+    } else if (activeElementId !== "pnnext") {
+      if (prevElement) {
+        prevElement.focus();
+      } else {
+        nextElement.focus();
+      }
+    }
+
+    return currentIndex;
+  }
+
+  function handleArrowUp(currentIndex, elements, nextElement, prevElement, activeElementId) {
+    if (currentIndex === elements.length - 1) {
+      if (activeElementId === "pnnext") {
+        if (prevElement) {
+          prevElement.focus();
+        } else {
+          focusElement(currentIndex, elements);
+        }
+        return currentIndex;
+      }
+      if (activeElementId === "pnprev") {
+        focusElement(currentIndex, elements);
+        return currentIndex;
+      }
+    }
+
+    if (currentIndex > 0) {
+      return currentIndex - 1;
+    }
+
+    return currentIndex;
+  }
+
+  // 検索結果リンクを取得
+  const searchResultElements = filterNonEmptyElements(
+    document.querySelectorAll("a[jsname='UWckNb']")
+  );
+
+  let currentIndex = NOT_INITIALIZED;
+
+  const nextElement = document.getElementById("pnnext");
+  const prevElement = document.getElementById("pnprev");
+
+  document.documentElement.setAttribute('class', "zAoYTe");
+
+  document.addEventListener("keydown", (event) => {
+    const activeElementId = document.activeElement.id;
+
+    // 初回の矢印キー入力で最初の要素にフォーカス
+    if (currentIndex === NOT_INITIALIZED) {
+      if (event.code === "ArrowUp" || event.code === "ArrowDown") {
+        currentIndex = 0;
+        focusElement(currentIndex, searchResultElements);
+      }
+      return;
+    }
+
+    let newIndex = currentIndex;
+
     switch (event.key) {
       case "ArrowDown":
-        if (now < elements.length - 1) {
-          now = now + 1;
-          focus_element(now, elements);
-        }
-        if (now == (elements.length - 1)) {
-          next_element.click();
-          setTimeout(function() {
-            elements = filterHaveInnerHTML(document.querySelectorAll("a[jsname='UWckNb']"));
-          }, 1500);
-        }
+        newIndex = handleArrowDown(
+          currentIndex,
+          searchResultElements,
+          nextElement,
+          prevElement,
+          activeElementId
+        );
         break;
+
       case "ArrowUp":
-        if (now > 0) {
-          now = now - 1;
-          focus_element(now, elements);
+        newIndex = handleArrowUp(
+          currentIndex,
+          searchResultElements,
+          nextElement,
+          prevElement,
+          activeElementId
+        );
+        break;
+
+      case "Enter":
+        // ページネーションボタンにフォーカスがある場合はスキップ
+        if (activeElementId === "pnnext" || activeElementId === "pnprev") {
+          return;
         }
-        break;
+        if (currentIndex >= 0 && currentIndex < searchResultElements.length) {
+          event.preventDefault();
+          const url = searchResultElements[currentIndex].href;
+          if (event.metaKey || event.ctrlKey) {
+            // Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux): Copy URL
+            copyToClipboard(url);
+          } else {
+            // Enter: Open link
+            location.href = url;
+          }
+        }
+        return;
+
       default:
-        break;
+        return;
     }
-  }
-});
+
+    if (newIndex !== currentIndex) {
+      currentIndex = newIndex;
+      focusElement(currentIndex, searchResultElements);
+    }
+  });
+})();
