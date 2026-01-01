@@ -206,7 +206,7 @@ function getChatArea() {
 // チャットエリアをスクロール
 function scrollChatArea(direction) {
   const chatArea = getChatArea();
-  const scrollAmount = window.innerHeight * 0.4;
+  const scrollAmount = window.innerHeight * 0.2;
   const scrollValue = direction === 'up' ? -scrollAmount : scrollAmount;
 
   if (chatArea === document.documentElement || chatArea === document.body) {
