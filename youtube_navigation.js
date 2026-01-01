@@ -1,13 +1,17 @@
 // ==UserScript==
-// @name         YouTube History
+// @name         YouTube Navigation
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Keyboard shortcuts for YouTube history
+// @description  Keyboard shortcuts for YouTube (search, history, playlist)
 // @author       toyama0919
+// @match        https://www.youtube.com/results?search_query=*
+// @match        https://youtube.com/results?search_query=*
 // @match        https://www.youtube.com/feed/history
 // @match        https://youtube.com/feed/history
-// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_history.js
-// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_history.js
+// @match        https://www.youtube.com/playlist?list=*
+// @match        https://youtube.com/playlist?list=*
+// @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_navigation.js
+// @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_navigation.js
 // @grant        none
 // ==/UserScript==
 
@@ -18,16 +22,35 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    .youtube-history-selected {
-      outline: 3px solid #ff0000 !important;
-      outline-offset: 2px !important;
-      background-color: rgba(255, 255, 0, 0.1) !important;
+    .youtube-nav-selected {
+      outline: 4px solid #ff0000 !important;
+      outline-offset: 3px !important;
+      background-color: rgba(255, 255, 0, 0.3) !important;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
     }
   `;
   document.head.appendChild(style);
 
+  // ページに応じて適切なセレクタを選択
   const getVideoLinks = () => {
-    return Array.from(document.querySelectorAll('a.yt-lockup-metadata-view-model__title'))
+    const path = location.pathname;
+    let selector;
+
+    if (path === '/feed/history') {
+      // 履歴ページ
+      selector = 'a.yt-lockup-metadata-view-model__title';
+    } else if (path.startsWith('/playlist')) {
+      // プレイリストページ
+      selector = 'a#video-title';
+    } else if (path === '/results') {
+      // 検索結果ページ
+      selector = 'h3>a#video-title';
+    } else {
+      // その他のページでも一般的なセレクタを試す
+      selector = 'a#video-title';
+    }
+
+    return Array.from(document.querySelectorAll(selector))
       .filter(el => el.href && el.href.includes('/watch?v='));
   };
 
@@ -36,13 +59,13 @@
     if (index < 0 || index >= links.length) return;
 
     // Remove previous selection
-    document.querySelectorAll('.youtube-history-selected').forEach(el => {
-      el.classList.remove('youtube-history-selected');
+    document.querySelectorAll('.youtube-nav-selected').forEach(el => {
+      el.classList.remove('youtube-nav-selected');
     });
 
     // Add new selection
     const selectedLink = links[index];
-    selectedLink.classList.add('youtube-history-selected');
+    selectedLink.classList.add('youtube-nav-selected');
     selectedLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
     currentIndex = index;
   };
