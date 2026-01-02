@@ -64,6 +64,29 @@
     }
   });
 
+  // ページ読み込み時にソース検索のテキストエリアにフォーカス
+  const focusSourceSearchTextarea = () => {
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    const interval = setInterval(() => {
+      attempts++;
+      const sourceSearchTextarea = document.querySelector('textarea.query-box-textarea');
+
+      if (sourceSearchTextarea) {
+        clearInterval(interval);
+        sourceSearchTextarea.focus();
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+      }
+    }, 500);
+  };
+
+  // ページ読み込み後に実行
+  setTimeout(() => {
+    focusSourceSearchTextarea();
+  }, 1000);
+
   // 現在のページがノートブック詳細画面かどうかを判定
   const isNotebookDetailPage = () => {
     return location.pathname.startsWith('/notebook/');
