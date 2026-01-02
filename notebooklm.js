@@ -140,7 +140,56 @@
     currentIndex = index;
   };
 
+  // チャットエリアを取得（スクロール可能な要素を探す）
+  const getChatArea = () => {
+    // window自体がスクロール対象かチェック
+    if (document.documentElement.scrollHeight > document.documentElement.clientHeight) {
+      return document.documentElement;
+    }
+
+    // NotebookLMのチャットエリアを探す（複数のセレクタを試す）
+    const selectors = [
+      'chat-panel',
+      '.chat-panel-content',
+      '.chat-message-pair',
+      'main',
+      '[role="log"]',
+      '[class*="chat"]',
+      '[class*="conversation"]',
+      '[class*="scroll"]'
+    ];
+
+    for (const selector of selectors) {
+      const element = document.querySelector(selector);
+      if (element && element.scrollHeight > element.clientHeight) {
+        return element;
+      }
+    }
+
+    return document.documentElement;
+  };
+
+  // チャットエリアをスクロール
+  const scrollChatArea = (direction) => {
+    const chatArea = getChatArea();
+    const scrollAmount = window.innerHeight * 0.2;
+    const scrollValue = direction === 'up' ? -scrollAmount : scrollAmount;
+
+    if (chatArea === document.documentElement || chatArea === document.body) {
+      window.scrollBy({ top: scrollValue, behavior: 'smooth' });
+    } else {
+      chatArea.scrollBy({ top: scrollValue, behavior: 'smooth' });
+    }
+  };
+
   document.addEventListener('keydown', (e) => {
+    // PageUp/PageDownでchat欄をスクロール
+    if (e.key === 'PageUp' || e.key === 'PageDown') {
+      e.preventDefault();
+      scrollChatArea(e.key === 'PageUp' ? 'up' : 'down');
+      return;
+    }
+
     // Endキーでテキストエリア間をトグル
     if (e.key === 'End') {
       e.preventDefault();
