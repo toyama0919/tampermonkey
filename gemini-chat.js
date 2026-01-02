@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         gemini-chat
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.6
 // @description  Gemini Chat UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://gemini.google.com/app*
@@ -251,6 +251,72 @@ function focusTextarea() {
     sel.addRange(range);
   }
 }
+
+// URLパラメータからクエリを取得してテキストエリアに設定
+function setQueryFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const query = urlParams.get('q');
+
+  if (!query) return;
+
+  let attempts = 0;
+  const maxAttempts = 20;
+
+  const interval = setInterval(() => {
+    attempts++;
+    const textarea = document.querySelector('div[contenteditable="true"][role="textbox"]');
+
+    if (textarea) {
+      clearInterval(interval);
+
+      // 内容をクリア
+      while (textarea.firstChild) {
+        textarea.removeChild(textarea.firstChild);
+      }
+
+      // クエリテキストを設定
+      const p = document.createElement('p');
+      p.textContent = query;
+      textarea.appendChild(p);
+
+      // フォーカス
+      textarea.focus();
+
+      // カーソルを末尾に移動
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(textarea);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+
+      // inputイベントを発火してGeminiのUIを更新
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+
+      // 送信ボタンを探してクリック
+      setTimeout(() => {
+        const sendButton = document.querySelector('button[aria-label*="送信"]') ||
+                          document.querySelector('button[aria-label*="Send"]') ||
+                          document.querySelector('button.send-button') ||
+                          Array.from(document.querySelectorAll('button')).find(btn =>
+                            btn.getAttribute('aria-label')?.includes('送信') ||
+                            btn.getAttribute('aria-label')?.includes('Send')
+                          );
+
+        if (sendButton && !sendButton.disabled) {
+          sendButton.click();
+        }
+      }, 500);
+    } else if (attempts >= maxAttempts) {
+      clearInterval(interval);
+    }
+  }, 200);
+}
+
+// ページ読み込み時にクエリパラメータをチェック
+setTimeout(() => {
+  setQueryFromUrl();
+}, 1000);
 
 document.addEventListener("keydown", function(event) {
   // 入力欄にフォーカスがある場合は履歴操作を無効化（履歴選択モード以外）

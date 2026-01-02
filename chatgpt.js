@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  ChatGPT UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://chatgpt.com/*
@@ -250,6 +250,59 @@ function focusTextarea() {
     sel.addRange(range);
   }
 }
+
+// URLパラメータからクエリを取得してテキストエリアに設定
+function setQueryFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const query = urlParams.get('q');
+
+  if (!query) return;
+
+  let attempts = 0;
+  const maxAttempts = 20;
+
+  const interval = setInterval(() => {
+    attempts++;
+    const textarea = document.querySelector('textarea[id="prompt-textarea"]') ||
+                     document.querySelector('textarea');
+
+    if (textarea) {
+      clearInterval(interval);
+
+      // クエリテキストを設定
+      textarea.value = query;
+
+      // フォーカス
+      textarea.focus();
+
+      // inputイベントを発火してChatGPTのUIを更新
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      textarea.dispatchEvent(new Event('change', { bubbles: true }));
+
+      // 送信ボタンを探してクリック
+      setTimeout(() => {
+        const sendButton = document.querySelector('button[data-testid="send-button"]') ||
+                          document.querySelector('button[aria-label*="Send"]') ||
+                          document.querySelector('button[aria-label*="送信"]') ||
+                          Array.from(document.querySelectorAll('button')).find(btn => {
+                            const svg = btn.querySelector('svg');
+                            return svg && btn.disabled === false;
+                          });
+
+        if (sendButton && !sendButton.disabled) {
+          sendButton.click();
+        }
+      }, 500);
+    } else if (attempts >= maxAttempts) {
+      clearInterval(interval);
+    }
+  }, 200);
+}
+
+// ページ読み込み時にクエリパラメータをチェック
+setTimeout(() => {
+  setQueryFromUrl();
+}, 1000);
 
 document.addEventListener("keydown", function(event) {
   // PageUp/PageDownは最優先で処理（入力欄にフォーカスがあっても）
