@@ -11,49 +11,24 @@
 // ==/UserScript==
 
 
-// ページ読み込み時にサイドメニューを開く
+// サイドバーの開閉をトグル
 let lastClickTime = 0;
 
-function ensureSidebarOpen() {
-  const sidebar = document.querySelector('.conversation-items-container');
-
-  // サイドバーの幅が100px以上なら開いている（46pxは閉じている状態）
-  if (sidebar && sidebar.offsetWidth > 100) {
-    return true;
-  }
-
+function toggleSidebar() {
   // 最後にクリックしてから1秒以内なら何もしない（アニメーション待ち）
   const now = Date.now();
   if (now - lastClickTime < 1000) {
-    return false;
+    return;
   }
 
-  // 閉じている場合、メニューボタンをクリック
+  // メニューボタンをクリックしてトグル
   const menuButton = document.querySelector('button[data-test-id="side-nav-menu-button"]');
 
   if (menuButton) {
     menuButton.click();
     lastClickTime = now;
   }
-
-  return false;
 }
-
-// ページ読み込み後に実行（一度開いたら停止）
-let sidebarAttempts = 0;
-let sidebarOpened = false;
-const sidebarInterval = setInterval(() => {
-  sidebarAttempts++;
-
-  if (!sidebarOpened) {
-    sidebarOpened = ensureSidebarOpen();
-  }
-
-  // 開いたら、または10回試行したら停止
-  if (sidebarOpened || sidebarAttempts >= 10) {
-    clearInterval(sidebarInterval);
-  }
-}, 500);
 
 // チャット履歴選択の管理
 let selectedHistoryIndex = 0;
@@ -321,6 +296,13 @@ setTimeout(() => {
 document.addEventListener("keydown", function(event) {
   // 入力欄にフォーカスがある場合は履歴操作を無効化（履歴選択モード以外）
   const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
+
+  // Delete: サイドバーの開閉をトグル
+  if (event.code === "Delete" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+    event.preventDefault();
+    toggleSidebar();
+    return;
+  }
 
   // Home: 新規チャット作成
   if (event.code === "Home" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
