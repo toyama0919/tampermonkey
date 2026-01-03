@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  ChatGPT UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://chatgpt.com/*
@@ -462,18 +462,25 @@ document.addEventListener("keydown", function(event) {
 
   // 履歴選択モード外で入力欄以外にいる時の矢印キー操作
   if (!historySelectionMode && !isInInput) {
-    // コピーボタンにフォーカスがある場合は、コピーボタン間を移動
+    // コピーボタンにフォーカスがある場合の処理
     const focusedElement = document.activeElement;
     const isCopyButton = focusedElement &&
                         (focusedElement.getAttribute('aria-label')?.includes('Copy') ||
                          focusedElement.getAttribute('aria-label')?.includes('コピー') ||
                          focusedElement.classList?.contains('copy-button'));
 
-    if (isCopyButton && (event.code === "ArrowUp" || event.code === "ArrowDown")) {
-      event.preventDefault();
-      const direction = event.code === "ArrowUp" ? 'up' : 'down';
-      moveBetweenCopyButtons(direction);
-      return;
+    if (isCopyButton) {
+      if (event.code === "ArrowUp" || event.code === "ArrowDown") {
+        event.preventDefault();
+        const direction = event.code === "ArrowUp" ? 'up' : 'down';
+        moveBetweenCopyButtons(direction);
+        return;
+      } else if (event.code === "Enter") {
+        // Enterキーでコピーボタンを明示的にクリック
+        event.preventDefault();
+        focusedElement.click();
+        return;
+      }
     }
 
     if (event.code === "ArrowUp") {
