@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         gemini-chat
 // @namespace    http://tampermonkey.net/
-// @version      0.6
+// @version      0.9
 // @description  Gemini Chat UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://gemini.google.com/app*
@@ -229,6 +229,12 @@ function focusTextarea() {
 
 // URLパラメータからクエリを取得してテキストエリアに設定
 function setQueryFromUrl() {
+  // URLパスが /app のみの場合のみ処理（既存の会話IDがある場合は処理しない）
+  const path = window.location.pathname;
+  if (path !== '/app' && path !== '/app/') {
+    return;
+  }
+
   const urlParams = new URLSearchParams(window.location.search);
   const query = urlParams.get('q');
 
@@ -293,9 +299,35 @@ setTimeout(() => {
   setQueryFromUrl();
 }, 1000);
 
+// コピーボタンを取得してフォーカス
+function focusCopyButton(direction) {
+  const copyButtons = Array.from(document.querySelectorAll('button[aria-label*="コピー"], button[aria-label*="Copy"], button.copy-button'));
+
+  // 最後の出力のコピーボタンを探す
+  if (copyButtons.length === 0) return false;
+
+  if (direction === 'up') {
+    // 上キー：最後のコピーボタンにフォーカス
+    copyButtons[copyButtons.length - 1].focus();
+  } else {
+    // 下キー：最初のコピーボタンにフォーカス
+    copyButtons[0].focus();
+  }
+
+  return true;
+}
+
 document.addEventListener("keydown", function(event) {
   // 入力欄にフォーカスがある場合は履歴操作を無効化（履歴選択モード以外）
   const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
+
+  // Ctrl+上下キーでコピーボタンにフォーカス
+  if (isInInput && (event.code === "ArrowUp" || event.code === "ArrowDown") && event.ctrlKey && !event.metaKey && !event.shiftKey) {
+    event.preventDefault();
+    const direction = event.code === "ArrowUp" ? 'up' : 'down';
+    focusCopyButton(direction);
+    return;
+  }
 
   // Delete: サイドバーの開閉をトグル
   if (event.code === "Delete" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
