@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.8
 // @description  ChatGPT UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://chatgpt.com/*
@@ -232,23 +232,53 @@ function createNewChat() {
 
 // テキストエリアにフォーカス
 function focusTextarea() {
-  const textarea = document.querySelector('textarea[id="prompt-textarea"]') ||
-                   document.querySelector('textarea') ||
-                   document.querySelector('div[contenteditable="true"]');
+  let attempts = 0;
+  const maxAttempts = 5;
 
-  if (!textarea) return;
+  const tryFocus = () => {
+    const textarea = document.querySelector('textarea[id="prompt-textarea"]') ||
+                     document.querySelector('textarea') ||
+                     document.querySelector('div[contenteditable="true"]');
 
-  textarea.focus();
+    if (textarea) {
+      // 強制的にフォーカスを設定
+      textarea.focus();
 
-  // contenteditable要素の場合、カーソルを末尾に移動
-  if (textarea.contentEditable === 'true') {
-    const range = document.createRange();
-    const sel = window.getSelection();
-    range.selectNodeContents(textarea);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
+      // さらにクリックイベントも発火
+      textarea.click();
+
+      // contenteditable要素の場合、カーソルを末尾に移動
+      if (textarea.contentEditable === 'true') {
+        try {
+          const range = document.createRange();
+          const sel = window.getSelection();
+          range.selectNodeContents(textarea);
+          range.collapse(false);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        } catch (e) {
+          // エラーが起きても続行
+        }
+      }
+
+      return true;
+    }
+
+    return false;
+  };
+
+  // 最初の試行
+  if (tryFocus()) {
+    return;
   }
+
+  // 見つからない場合、リトライ
+  const retryInterval = setInterval(() => {
+    attempts++;
+    if (tryFocus() || attempts >= maxAttempts) {
+      clearInterval(retryInterval);
+    }
+  }, 50);
 }
 
 // URLパラメータからクエリを取得してテキストエリアに設定
@@ -414,7 +444,7 @@ document.addEventListener("keydown", function(event) {
       }
       highlightHistory(selectedHistoryIndex);
     } else {
-      // それ以外なら、まずテキストエリアにフォーカス
+      // それ以外なら、テキストエリアにフォーカス
       focusTextarea();
     }
     return;
