@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT
 // @namespace    http://tampermonkey.net/
-// @version      0.9
+// @version      1.2
 // @description  ChatGPT UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://chatgpt.com/*
@@ -328,6 +328,36 @@ function focusCopyButton(direction) {
   return true;
 }
 
+// コピーボタン間を移動
+function moveBetweenCopyButtons(direction) {
+  const copyButtons = Array.from(document.querySelectorAll('button[aria-label*="Copy"], button[aria-label*="コピー"], button.copy-button'));
+  const currentIndex = copyButtons.findIndex(btn => btn === document.activeElement);
+
+  if (currentIndex === -1) return false;
+
+  if (direction === 'up') {
+    if (currentIndex > 0) {
+      // 前のコピーボタンにフォーカス
+      copyButtons[currentIndex - 1].focus();
+      return true;
+    } else {
+      // 最初のコピーボタンなのでテキストエリアに戻る
+      focusTextarea();
+      return true;
+    }
+  } else {
+    if (currentIndex < copyButtons.length - 1) {
+      // 次のコピーボタンにフォーカス
+      copyButtons[currentIndex + 1].focus();
+      return true;
+    } else {
+      // 最後のコピーボタンなのでテキストエリアに戻る
+      focusTextarea();
+      return true;
+    }
+  }
+}
+
 document.addEventListener("keydown", function(event) {
   // 入力欄にフォーカスがある場合のチェック
   const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
@@ -417,8 +447,35 @@ document.addEventListener("keydown", function(event) {
     }
   }
 
+  // テキストエリアが空で上下キーが押された場合、コピーボタンにフォーカス
+  if (!historySelectionMode && isInInput && (event.code === "ArrowUp" || event.code === "ArrowDown") && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+    const textarea = document.querySelector('textarea[id="prompt-textarea"]') ||
+                     document.querySelector('textarea');
+
+    if (textarea && textarea.value.trim() === '') {
+      event.preventDefault();
+      const direction = event.code === "ArrowUp" ? 'up' : 'down';
+      focusCopyButton(direction);
+      return;
+    }
+  }
+
   // 履歴選択モード外で入力欄以外にいる時の矢印キー操作
   if (!historySelectionMode && !isInInput) {
+    // コピーボタンにフォーカスがある場合は、コピーボタン間を移動
+    const focusedElement = document.activeElement;
+    const isCopyButton = focusedElement &&
+                        (focusedElement.getAttribute('aria-label')?.includes('Copy') ||
+                         focusedElement.getAttribute('aria-label')?.includes('コピー') ||
+                         focusedElement.classList?.contains('copy-button'));
+
+    if (isCopyButton && (event.code === "ArrowUp" || event.code === "ArrowDown")) {
+      event.preventDefault();
+      const direction = event.code === "ArrowUp" ? 'up' : 'down';
+      moveBetweenCopyButtons(direction);
+      return;
+    }
+
     if (event.code === "ArrowUp") {
       event.preventDefault();
       moveHistoryUp();

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         gemini-chat
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.4
 // @description  Gemini Chat UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://gemini.google.com/app*
@@ -317,6 +317,36 @@ function focusCopyButton(direction) {
   return true;
 }
 
+// コピーボタン間を移動
+function moveBetweenCopyButtons(direction) {
+  const copyButtons = Array.from(document.querySelectorAll('button[aria-label*="コピー"], button[aria-label*="Copy"], button.copy-button'));
+  const currentIndex = copyButtons.findIndex(btn => btn === document.activeElement);
+
+  if (currentIndex === -1) return false;
+
+  if (direction === 'up') {
+    if (currentIndex > 0) {
+      // 前のコピーボタンにフォーカス
+      copyButtons[currentIndex - 1].focus();
+      return true;
+    } else {
+      // 最初のコピーボタンなのでテキストエリアに戻る
+      focusTextarea();
+      return true;
+    }
+  } else {
+    if (currentIndex < copyButtons.length - 1) {
+      // 次のコピーボタンにフォーカス
+      copyButtons[currentIndex + 1].focus();
+      return true;
+    } else {
+      // 最後のコピーボタンなのでテキストエリアに戻る
+      focusTextarea();
+      return true;
+    }
+  }
+}
+
 document.addEventListener("keydown", function(event) {
   // 入力欄にフォーカスがある場合は履歴操作を無効化（履歴選択モード以外）
   const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
@@ -400,8 +430,34 @@ document.addEventListener("keydown", function(event) {
     }
   }
 
+  // テキストエリアが空で上下キーが押された場合、コピーボタンにフォーカス
+  if (!historySelectionMode && isInInput && (event.code === "ArrowUp" || event.code === "ArrowDown") && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+    const textarea = document.querySelector('div[contenteditable="true"][role="textbox"]');
+
+    if (textarea && textarea.textContent.trim() === '') {
+      event.preventDefault();
+      const direction = event.code === "ArrowUp" ? 'up' : 'down';
+      focusCopyButton(direction);
+      return;
+    }
+  }
+
   // 履歴選択モード外で入力欄以外にいる時の矢印キー操作
   if (!historySelectionMode && !isInInput) {
+    // コピーボタンにフォーカスがある場合は、コピーボタン間を移動
+    const focusedElement = document.activeElement;
+    const isCopyButton = focusedElement &&
+                        (focusedElement.getAttribute('aria-label')?.includes('コピー') ||
+                         focusedElement.getAttribute('aria-label')?.includes('Copy') ||
+                         focusedElement.classList?.contains('copy-button'));
+
+    if (isCopyButton && (event.code === "ArrowUp" || event.code === "ArrowDown")) {
+      event.preventDefault();
+      const direction = event.code === "ArrowUp" ? 'up' : 'down';
+      moveBetweenCopyButtons(direction);
+      return;
+    }
+
     if (event.code === "ArrowUp") {
       event.preventDefault();
       moveHistoryUp();
