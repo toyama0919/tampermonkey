@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  ChatGPT UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://chatgpt.com/*
@@ -385,9 +385,6 @@ document.addEventListener("keydown", function(event) {
     scrollChatArea(direction);
     return;
   }
-
-  // 入力欄にフォーカスがある場合は履歴操作を無効化（履歴選択モード以外）
-  const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
 
   // Home: 新規チャット作成
   if (event.code === "Home" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
