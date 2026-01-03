@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.9
 // @description  ChatGPT UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://chatgpt.com/*
@@ -331,14 +331,6 @@ function focusCopyButton(direction) {
 document.addEventListener("keydown", function(event) {
   // 入力欄にフォーカスがある場合のチェック
   const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
-
-  // Ctrl+上下キーでコピーボタンにフォーカス
-  if (isInInput && (event.code === "ArrowUp" || event.code === "ArrowDown") && event.ctrlKey && !event.metaKey && !event.shiftKey) {
-    event.preventDefault();
-    const direction = event.code === "ArrowUp" ? 'up' : 'down';
-    focusCopyButton(direction);
-    return;
-  }
 
   // PageUp/PageDownは最優先で処理（入力欄にフォーカスがあっても）
   if (event.code === "PageUp" || event.code === "PageDown") {
