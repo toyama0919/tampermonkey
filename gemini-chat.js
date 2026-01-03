@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         gemini-chat
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      2.3
 // @description  Gemini Chat UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://gemini.google.com/app*
+// @match        https://gemini.google.com/search*
 // @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/gemini-chat.js
 // @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/gemini-chat.js
 // @grant        none
@@ -13,6 +14,140 @@
 
 // サイドバーの開閉をトグル
 let lastClickTime = 0;
+
+// 検索画面かどうかを判定
+function isSearchPage() {
+  return window.location.pathname.startsWith('/search');
+}
+
+// 検索結果の選択管理
+let selectedSearchIndex = 0;
+
+// 検索結果の一覧を取得
+function getSearchResults() {
+  // 検索画面での検索結果（search-snippet要素）
+  let results = Array.from(document.querySelectorAll('search-snippet[tabindex="0"]'));
+
+  // 見つからない場合は別のパターンも試す
+  if (results.length === 0) {
+    results = Array.from(document.querySelectorAll('search-snippet'));
+  }
+
+  // それでも見つからない場合は元のパターン（初回読み込み時）
+  if (results.length === 0) {
+    results = Array.from(document.querySelectorAll('div.conversation-container[role="option"]'));
+  }
+
+  if (results.length === 0) {
+    results = Array.from(document.querySelectorAll('[role="option"].conversation-container'));
+  }
+
+  return results;
+}
+
+// 検索結果を選択状態にする（視覚的なハイライト）
+function highlightSearchResult(index) {
+  const items = getSearchResults();
+  if (items.length === 0) return;
+
+  // インデックスを範囲内に収める
+  selectedSearchIndex = Math.max(0, Math.min(index, items.length - 1));
+
+  // すべてのハイライトを削除
+  items.forEach(item => {
+    item.style.outline = '';
+    item.style.outlineOffset = '';
+  });
+
+  // 選択したアイテムをハイライト
+  const selectedItem = items[selectedSearchIndex];
+  if (selectedItem) {
+    selectedItem.style.outline = '2px solid #1a73e8';
+    selectedItem.style.outlineOffset = '-2px';
+
+    // スクロールして表示
+    selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+// 検索結果を上に移動
+function moveSearchResultUp() {
+  highlightSearchResult(selectedSearchIndex - 1);
+  // フォーカスを検索入力欄に戻す
+  const searchInput = document.querySelector('input[data-test-id="search-input"]');
+  if (searchInput) {
+    searchInput.focus();
+  }
+}
+
+// 検索結果を下に移動
+function moveSearchResultDown() {
+  highlightSearchResult(selectedSearchIndex + 1);
+  // フォーカスを検索入力欄に戻す
+  const searchInput = document.querySelector('input[data-test-id="search-input"]');
+  if (searchInput) {
+    searchInput.focus();
+  }
+}
+
+// 選択した検索結果を開く
+function openSelectedSearchResult() {
+  const items = getSearchResults();
+  if (items.length === 0 || !items[selectedSearchIndex]) return;
+
+  const selectedItem = items[selectedSearchIndex];
+
+  // まず、jslog属性を持つdivを探す（クリック可能な要素）
+  const clickableDiv = selectedItem.querySelector('div[jslog]');
+  if (clickableDiv) {
+    console.log('Gemini Search: Clicking jslog div');
+    clickableDiv.click();
+
+    // マウスイベントも発火
+    ['mousedown', 'mouseup', 'click'].forEach(eventType => {
+      const event = new MouseEvent(eventType, {
+        view: window,
+        bubbles: true,
+        cancelable: true
+      });
+      clickableDiv.dispatchEvent(event);
+    });
+
+    // 少し待ってからURLを直接変更（最終手段）
+    setTimeout(() => {
+      // タイトル要素からテキストを取得してURLを構築
+      const titleElement = selectedItem.querySelector('.title');
+      if (titleElement) {
+        const title = titleElement.textContent;
+        console.log('Gemini Search: Opening result -', title);
+        // search-snippetがページ遷移しない場合、直接クリックを試みる
+        selectedItem.click();
+      }
+    }, 100);
+    return;
+  }
+
+  // リンクを探す
+  const link = selectedItem.querySelector('a[href]');
+  if (link) {
+    console.log('Gemini Search: Clicking link', link.href);
+    link.click();
+    return;
+  }
+
+  // どちらもない場合は要素自体をクリック
+  console.log('Gemini Search: Clicking element directly');
+  selectedItem.click();
+
+  ['mousedown', 'mouseup', 'click'].forEach(eventType => {
+    const event = new MouseEvent(eventType, {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+    selectedItem.dispatchEvent(event);
+  });
+}
 
 function toggleSidebar() {
   // 最後にクリックしてから1秒以内なら何もしない（アニメーション待ち）
@@ -299,6 +434,27 @@ setTimeout(() => {
   setQueryFromUrl();
 }, 1000);
 
+// 検索画面で最初の検索結果をハイライト
+if (isSearchPage()) {
+  let attempts = 0;
+  const maxAttempts = 10;
+
+  const highlightInterval = setInterval(() => {
+    attempts++;
+    const searchResults = getSearchResults();
+
+    if (searchResults.length > 0) {
+      selectedSearchIndex = 0;
+      highlightSearchResult(0);
+      clearInterval(highlightInterval);
+      console.log('Gemini Search: Found', searchResults.length, 'results');
+    } else if (attempts >= maxAttempts) {
+      clearInterval(highlightInterval);
+      console.log('Gemini Search: No results found after', maxAttempts, 'attempts');
+    }
+  }, 500);
+}
+
 // コピーボタンを取得してフォーカス
 function focusCopyButton(direction) {
   const copyButtons = Array.from(document.querySelectorAll('button[aria-label*="コピー"], button[aria-label*="Copy"], button.copy-button'));
@@ -348,6 +504,58 @@ function moveBetweenCopyButtons(direction) {
 }
 
 document.addEventListener("keydown", function(event) {
+  // 検索画面の場合は専用の処理
+  if (isSearchPage()) {
+    // 上下キーで検索結果を選択（入力欄にフォーカスがあっても動作）
+    if (event.code === "ArrowUp" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      moveSearchResultUp();
+      return;
+    }
+
+    if (event.code === "ArrowDown" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      moveSearchResultDown();
+      return;
+    }
+
+    // Enterキーで選択した検索結果を開く
+    if (event.code === "Enter" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+      // テキストエリアで複数行入力中（Shiftなし）の場合は検索結果を開く
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      openSelectedSearchResult();
+      return;
+    }
+
+    // PageUp/PageDownのみ通常のスクロール処理
+    if (event.code === "PageUp") {
+      event.preventDefault();
+      window.scrollBy({ top: -window.innerHeight * 0.8, behavior: 'smooth' });
+      return;
+    }
+
+    if (event.code === "PageDown") {
+      event.preventDefault();
+      window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+      return;
+    }
+
+    // その他のショートカットキー（Home, End, Delete）は無効化
+    if (['Home', 'End', 'Delete'].includes(event.code)) {
+      return;
+    }
+
+    // それ以外のキーは通常動作（入力など）
+    return;
+  }
+
+  // 以下は通常のチャット画面の処理
   // 入力欄にフォーカスがある場合は履歴操作を無効化（履歴選択モード以外）
   const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
 
@@ -479,4 +687,4 @@ document.addEventListener("keydown", function(event) {
       return;
     }
   }
-});
+}, true); // キャプチャフェーズでイベントを捕捉
