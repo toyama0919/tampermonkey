@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT
 // @namespace    http://tampermonkey.net/
-// @version      1.8
+// @version      1.9
 // @description  ChatGPT UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://chatgpt.com/*
@@ -88,8 +88,8 @@ function highlightHistory(index) {
     selectedItem.style.outline = '2px solid #10a37f';
     selectedItem.style.outlineOffset = '-2px';
 
-    // スクロールして表示
-    selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    // スクロールして表示（即座に）
+    selectedItem.scrollIntoView({ block: 'nearest', behavior: 'auto' });
   }
 }
 
@@ -209,10 +209,11 @@ function scrollChatArea(direction) {
   const scrollAmount = window.innerHeight * 0.2;
   const scrollValue = direction === 'up' ? -scrollAmount : scrollAmount;
 
+  // 速度優先で常にアニメーションなし
   if (chatArea === document.documentElement || chatArea === document.body) {
-    window.scrollBy({ top: scrollValue, behavior: 'smooth' });
+    window.scrollBy({ top: scrollValue, behavior: 'auto' });
   } else {
-    chatArea.scrollBy({ top: scrollValue, behavior: 'smooth' });
+    chatArea.scrollBy({ top: scrollValue, behavior: 'auto' });
   }
 }
 
