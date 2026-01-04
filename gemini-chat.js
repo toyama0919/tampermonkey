@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         gemini-chat
 // @namespace    http://tampermonkey.net/
-// @version      2.3
+// @version      2.6
 // @description  Gemini Chat UI improvements with keyboard shortcuts
 // @author       toyama0919
 // @match        https://gemini.google.com/app*
@@ -525,6 +525,11 @@ document.addEventListener("keydown", function(event) {
 
     // Enterキーで選択した検索結果を開く
     if (event.code === "Enter" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+      // IME入力中（日本語変換中）の場合はスキップ
+      if (event.isComposing) {
+        return;
+      }
+
       // テキストエリアで複数行入力中（Shiftなし）の場合は検索結果を開く
       event.preventDefault();
       event.stopPropagation();
@@ -558,6 +563,20 @@ document.addEventListener("keydown", function(event) {
   // 以下は通常のチャット画面の処理
   // 入力欄にフォーカスがある場合は履歴操作を無効化（履歴選択モード以外）
   const isInInput = event.target.matches('input, textarea, [contenteditable="true"]');
+
+  // Insert: 検索画面に移動
+  if (event.code === "Insert" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+    event.preventDefault();
+
+    // SPAなのでHistory APIを使用
+    const searchUrl = '/search?hl=ja';
+    history.pushState(null, '', searchUrl);
+
+    // popstateイベントを発火してSPAルーターに通知
+    window.dispatchEvent(new PopStateEvent('popstate', { state: null }));
+
+    return;
+  }
 
   // Delete: サイドバーの開閉をトグル
   if (event.code === "Delete" && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
