@@ -86,7 +86,9 @@
           e.preventDefault();
           const url = links[currentIndex].href;
           if (e.metaKey || e.ctrlKey) {
-            copyToClipboard(url);
+            // Open Gemini chat with the URL and summarization request
+            const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(url + 'を要約')}`;
+            window.open(geminiUrl, '_blank');
           } else {
             location.href = url;
           }
