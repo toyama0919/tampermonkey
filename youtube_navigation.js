@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Navigation
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Keyboard shortcuts for YouTube (search, history, playlist)
 // @author       toyama0919
 // @match        https://www.youtube.com/results?search_query=*
@@ -108,7 +108,8 @@
           const url = links[currentIndex].href;
           if (e.metaKey || e.ctrlKey) {
             // Open Gemini chat with the YouTube URL and summarization request
-            const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(url + 'を要約')}`;
+            const query = `URL: ${url}\n\nこの動画を要約してください。`;
+            const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}`;
             window.open(geminiUrl, '_blank');
           } else {
             location.href = url;
