@@ -53,8 +53,8 @@
 
   const openInGemini = (fileName, fileUrl) => {
     const query = fileUrl
-      ? `ファイル名: ${fileName}\nURL: ${fileUrl}\n\nこのファイルを要約してください。`
-      : `ファイル名: ${fileName}\n\nこのファイルを要約してください。`;
+      ? `ファイル名: ${fileName}\nURL: ${fileUrl}\n\nこのファイルの概要と重要なポイントを教えてください。`
+      : `ファイル名: ${fileName}\n\nこのファイルの概要と重要なポイントを教えてください。`;
 
     const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}`;
     window.open(geminiUrl, '_blank');
