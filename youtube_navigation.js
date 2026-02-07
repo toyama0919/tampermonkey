@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Navigation
 // @namespace    http://tampermonkey.net/
-// @version      0.2
-// @description  Keyboard shortcuts for YouTube (search, history, playlist)
+// @version      0.3
+// @description  Keyboard shortcuts for YouTube (search, history, playlist, channel)
 // @author       toyama0919
 // @match        https://www.youtube.com/results?search_query=*
 // @match        https://youtube.com/results?search_query=*
@@ -10,6 +10,8 @@
 // @match        https://youtube.com/feed/history
 // @match        https://www.youtube.com/playlist?list=*
 // @match        https://youtube.com/playlist?list=*
+// @match        https://www.youtube.com/@*/videos
+// @match        https://youtube.com/@*/videos
 // @updateURL    https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_navigation.js
 // @downloadURL  https://raw.githubusercontent.com/toyama0919/tampermonkey/master/youtube_navigation.js
 // @grant        none
@@ -45,6 +47,9 @@
     } else if (path === '/results') {
       // 検索結果ページ
       selector = 'h3>a#video-title';
+    } else if (path.includes('/@') && path.endsWith('/videos')) {
+      // チャンネルの動画一覧ページ
+      selector = 'a#video-title-link';
     } else {
       // その他のページでも一般的なセレクタを試す
       selector = 'a#video-title';
@@ -108,7 +113,7 @@
           const url = links[currentIndex].href;
           if (e.metaKey || e.ctrlKey) {
             // Open Gemini chat with the YouTube URL and summarization request
-            const query = `URL: ${url}\n\nこの動画を要約してください。`;
+            const query = `URL: ${url}\n\nこの動画の要点をまとめてください。`;
             const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}`;
             window.open(geminiUrl, '_blank');
           } else {

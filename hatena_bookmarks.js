@@ -2,7 +2,7 @@
 // @name         Hatena Bookmarks Navigation
 // @namespace    http://tampermonkey.net/
 // @version      0.2
-// @description  Keyboard shortcuts for Hatena Bookmarks
+// @descriptioan  Keyboard shortcuts for Hatena Bookmarks
 // @author       toyama0919
 // @match        https://b.hatena.ne.jp/hotentry*
 // @match        https://b.hatena.ne.jp/entrylist*
@@ -87,7 +87,7 @@
           const url = links[currentIndex].href;
           if (e.metaKey || e.ctrlKey) {
             // Open Gemini chat with the URL and summarization request
-            const query = `URL: ${url}\n\nこの記事を要約してください。`;
+            const query = `URL: ${url}\n\nこの記事の要点をまとめてください。`;
             const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}`;
             window.open(geminiUrl, '_blank');
           } else {
