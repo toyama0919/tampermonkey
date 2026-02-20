@@ -1,0 +1,5 @@
+# Cursor ignore file
+# AI コンテキストから除外するファイル・ディレクトリを指定する
+
+node_modules/
+.git/
