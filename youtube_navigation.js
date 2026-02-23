@@ -104,7 +104,7 @@
           if (e.metaKey) {
             const url = links[currentIndex].href;
             const query = `URL: ${url}\n\nこの動画の要点をまとめてください。`;
-            const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}`;
+            const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}&mode_id=default`;
             window.open(geminiUrl, '_blank');
           } else if (e.ctrlKey) {
             const url = links[currentIndex].href;
