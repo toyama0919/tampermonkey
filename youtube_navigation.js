@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Navigation
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.6
 // @description  Keyboard shortcuts for YouTube (search, history, playlist, channel)
 // @author       toyama0919
 // @match        https://www.youtube.com/results?search_query=*
@@ -36,27 +36,38 @@
   // ページに応じて適切なセレクタを選択
   const getVideoLinks = () => {
     const path = location.pathname;
-    let selector;
+    let selectors = [];
 
     if (path === '/feed/history') {
-      // 履歴ページ
-      selector = 'a.yt-lockup-metadata-view-model__title';
+      // 履歴ページ（新旧両対応）
+      selectors = [
+        'a.ytLockupMetadataViewModelTitle',       // 新UI (camelCase)
+        'a.ytLockupViewModelContentImage',        // 新UI サムネイル (camelCase)
+        'a.yt-lockup-view-model__content-image',  // 旧UI
+        'a.yt-lockup-metadata-view-model__title'  // 旧UI
+      ];
     } else if (path.startsWith('/playlist')) {
       // プレイリストページ
-      selector = 'a#video-title';
+      selectors = ['a#video-title'];
     } else if (path === '/results') {
       // 検索結果ページ
-      selector = 'h3>a#video-title';
+      selectors = ['h3>a#video-title'];
     } else if (path.includes('/@') && path.endsWith('/videos')) {
       // チャンネルの動画一覧ページ
-      selector = 'a#video-title-link';
+      selectors = ['a#video-title-link'];
     } else {
       // その他のページでも一般的なセレクタを試す
-      selector = 'a#video-title';
+      selectors = ['a#video-title'];
     }
 
-    return Array.from(document.querySelectorAll(selector))
-      .filter(el => el.href && el.href.includes('/watch?v='));
+    // 複数のセレクタを試して、マッチするものを返す
+    for (const selector of selectors) {
+      const links = Array.from(document.querySelectorAll(selector))
+        .filter(el => el.href && el.href.includes('/watch?v='));
+      if (links.length > 0) return links;
+    }
+
+    return [];
   };
 
   const selectVideo = (index) => {
