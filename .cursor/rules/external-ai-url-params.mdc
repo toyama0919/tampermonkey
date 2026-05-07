@@ -1,0 +1,17 @@
+---
+description: 外部AIサービスへのURLパラメータでチャット入力を渡す方法
+globs: **/*.js
+alwaysApply: false
+---
+
+# 外部AIサービスへのURLパラメータ
+
+## Gemini
+
+`q=` クエリパラメータに文字列を渡すと、チャットの入力欄にセットされる。
+
+```js
+const query = "調べたいこと";
+const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}`;
+window.open(geminiUrl, '_blank');
+```
