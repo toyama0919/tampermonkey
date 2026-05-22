@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Navigation
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.8
 // @description  Keyboard shortcuts for YouTube (search, history, playlist, channel)
 // @author       toyama0919
 // @match        https://www.youtube.com/results?search_query=*
@@ -114,12 +114,12 @@
           e.preventDefault();
           if (e.metaKey) {
             const url = links[currentIndex].href;
-            const query = `URL: ${url}\n\nこの動画の要点と、コメント欄の要約をまとめてください。`;
+            const query = `URL: ${url}\n\nこの動画の要点、コメント欄の要約、および動画内容への冷徹な分析をまとめてください。`;
             const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}&mode_id=default`;
             window.open(geminiUrl, '_blank');
           } else if (e.ctrlKey) {
             const url = links[currentIndex].href;
-            const query = `URL: ${url}\n\nPlease summarize the key points of this video and summarize the comments section, in English.`;
+            const query = `URL: ${url}\n\nPlease summarize the key points of this video, summarize the comments section, and give a cold-eyed ruthless analysis of the video content, in English.`;
             const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}&mode_id=english`;
             window.open(geminiUrl, '_blank');
           } else {

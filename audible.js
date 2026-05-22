@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Audible Library Navigation
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Keyboard shortcuts for Audible Library
 // @author       toyama0919
 // @match        https://www.audible.co.jp/library/titles*
@@ -95,8 +95,8 @@
 
             // Create Gemini query with title and author (with line breaks)
             const query = authors
-              ? `タイトル: ${title}\n著者: ${authors}\n\nこの書籍の内容を教えてください。`
-              : `タイトル: ${title}\n\nこの書籍の内容を教えてください。`;
+              ? `タイトル: ${title}\n著者: ${authors}\n\nこの書籍の内容と、この書籍への冷徹な分析を教えてください。`
+              : `タイトル: ${title}\n\nこの書籍の内容と、この書籍への冷徹な分析を教えてください。`;
             const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}`;
             window.open(geminiUrl, '_blank');
           } else {
