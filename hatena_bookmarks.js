@@ -87,7 +87,7 @@
           const url = links[currentIndex].href;
           if (e.metaKey || e.ctrlKey) {
             // Open Gemini chat with the URL and summarization request
-            const query = `URL: ${url}\n\nこの記事の要点をまとめてください。`;
+            const query = `URL: ${url}\n\nこの記事の要点、コメント欄の要約、および内容への冷徹な分析をまとめてください。`;
             const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}`;
             window.open(geminiUrl, '_blank');
           } else {

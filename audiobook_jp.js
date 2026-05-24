@@ -77,8 +77,8 @@
 
           if (e.metaKey || e.ctrlKey) {
             const query = author
-              ? `タイトル: ${title}\n${author}\n\nこの書籍の内容を教えてください。`
-              : `タイトル: ${title}\n\nこの書籍の内容を教えてください。`;
+              ? `タイトル: ${title}\n${author}\n\nこの書籍の要点、レビュー・評判の要約、および内容への冷徹な分析をまとめてください。`
+              : `タイトル: ${title}\n\nこの書籍の要点、レビュー・評判の要約、および内容への冷徹な分析をまとめてください。`;
             const geminiUrl = `https://gemini.google.com/app?q=${encodeURIComponent(query)}`;
             window.open(geminiUrl, '_blank');
           } else {

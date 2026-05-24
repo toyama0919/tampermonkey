@@ -54,7 +54,10 @@
       selectors = ['h3>a#video-title'];
     } else if (path.includes('/@') && path.endsWith('/videos')) {
       // チャンネルの動画一覧ページ
-      selectors = ['a#video-title-link'];
+      selectors = [
+        'a.ytLockupMetadataViewModelTitle',
+        'a#video-title-link',
+      ];
     } else {
       // その他のページでも一般的なセレクタを試す
       selectors = ['a#video-title'];
